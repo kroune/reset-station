@@ -1,3 +1,4 @@
 .pi/
+.playwright-mcp/
 .DS_Store
 Thumbs.db
