@@ -9,12 +9,23 @@ $tempPath = Join-Path ([IO.Path]::GetTempPath()) ('reset-station-' + [Guid]::New
 try {
     $location = Get-Location
     if ($location.Provider.Name -ne 'FileSystem') {
-        throw 'Откройте обычную папку X в терминале VS Code и повторите команду.'
+        throw 'Откройте обычную папку X в VS Code и создайте новый терминал. Ничего не удалено.'
     }
 
     $target = $location.ProviderPath
     if ([IO.Path]::GetFileName($target.TrimEnd([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar)) -ne 'X') {
-        throw "Команда должна запускаться внутри папки X. Текущая папка: $target"
+        $message = @(
+            'Терминал открыт не в папке X.'
+            "Текущая папка: $target"
+            ''
+            'Что сделать:'
+            '1. Откройте папку X в VS Code и создайте новый терминал.'
+            '2. Либо перейдите в неё командой: cd "полный\путь\к\X"'
+            '3. Повторите команду сброса.'
+            ''
+            'Ничего не удалено.'
+        ) -join "`n"
+        throw $message
     }
 
     $root = [IO.Path]::GetPathRoot($target)
@@ -54,7 +65,7 @@ try {
 catch {
     Write-Host ''
     Write-Host ('ОШИБКА: ' + $_.Exception.Message) -ForegroundColor Red
-    Write-Host 'Проверьте интернет и повторите команду. VS Code закрывать не нужно.'
+    Write-Host 'Исправьте указанную причину и повторите команду. VS Code закрывать не нужно.'
     exit 1
 }
 finally {
